@@ -10,8 +10,8 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 
 class PostForm
@@ -21,64 +21,57 @@ class PostForm
         return $schema
             ->components([
 
-                Section::make('Post Details')->schema([
-                    TextInput::make('title')
-                        ->required()
-                        ->maxLength(255),
-                    TextInput::make('slug')
-                        ->required()
-                        ->maxLength(255),
-                    Select::make('category_id')
-                        ->label('Category')
-                        ->required()
-                        ->relationship('category', 'name')
-                        ->searchable()
-                        ->preload()
-                        ->native(false),
-                    ColorPicker::make('color')
-                        ->required(),
+                Tabs::make('Create New Post')
+                    ->tabs([
+                        Tab::make('Post Info')
+                            ->icon('heroicon-o-document-text')
+                            ->schema([
+                                TextInput::make('title')
+                                    ->required()
+                                    ->maxLength(255),
 
-                    MarkdownEditor::make('content')
-                        ->required()
-                        ->columnSpanFull(),
-                ])->columnSpan(2)->columns(2),
+                                TextInput::make('slug')
+                                    ->required()
+                                    ->maxLength(255),
 
-                Group::make([
-                    Section::make('Images')->schema([
-                        FileUpload::make('thumbnail')
-                            ->disk('public')
-                            ->directory('thumbnails')
-                            ->image()
-                            ->helperText('Upload thumbnail image'),
+                                Select::make('category_id')
+                                    ->label('Category')
+                                    ->required()
+                                    ->relationship('category', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false),
+
+                                ColorPicker::make('color')->required(),
+                        ])->columns(2),
+
+                        Tab::make('Content')
+                            ->icon('heroicon-o-pencil-square')
+                            ->schema([
+                                MarkdownEditor::make('content')
+                                    ->required()
+                                    ->columnSpanFull(),
+                        ]),
+
+                        Tab::make('Settings')
+                            ->icon('heroicon-o-cog')
+                            ->schema([
+                                FileUpload::make('thumbnail')
+                                    ->disk('public')
+                                    ->directory('thumbnails')
+                                    ->image()
+                                    ->helperText('Upload thumbnail image'),
+                        ]),
+
+                        Tab::make('Meta')
+                            ->icon('heroicon-o-tag')
+                            ->schema([
+                                TagsInput::make('tags')->required(),
+                                Checkbox::make('published')->required()->columnSpanFull(),
+                        ])->columns(2),
                     ]),
 
-
-                    Section::make('Meta')->schema([
-
-                        TagsInput::make('tags')
-                            ->required(),
-
-                        Checkbox::make('published')
-                            ->required(),
-                    ]),
-
-//                    Section::make('Users')->schema([
-//
-//                       Select::make('users')
-//                           ->multiple()
-//                           ->relationship('users' , 'name')
-//                           ->searchable()
-//                           ->preload()
-//                           ->native(false),
-//                    ]),
-
-
-                ]),
-
-
-
-
-
-            ])->columns(3);
+            ])
+            ->columns(1);
     }
 }
