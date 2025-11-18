@@ -32,4 +32,9 @@ class Post extends Model
     {
         return $this->belongsToMany(User::class , 'post_users');
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }
